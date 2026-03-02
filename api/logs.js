@@ -4,7 +4,7 @@ export default async function handler(req, res) {
  // Retrieve logs from a file or database
  let logs = [];
  try {
- const response = await fetch('https://your-vercel-project.vercel.app/api/logs');
+ const response = await fetch('https://iplogs-amber.vercel.app/api/logs');
  const data = await response.json();
  logs = data.logs;
  } catch (error) {
@@ -31,3 +31,4 @@ export default async function handler(req, res) {
  res.status(405).end(`Method ${req.method} Not Allowed`);
  }
 }
+
