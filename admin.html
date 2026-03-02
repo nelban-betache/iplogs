@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Admin Panel</title>
+ <style>
+ body { font-family: Arial; padding: 15px; }
+ .card {
+ background: #f4f4f4;
+ padding: 10px;
+ margin-bottom: 10px;
+ border-radius: 6px;
+ }
+ button {
+ padding: 8px;
+ margin-bottom: 15px;
+ }
+ </style>
+</head>
+<body>
+ <h2>Admin Logs</h2>
+ <button onclick="clearLogs()">Clear Logs</button>
+ <div id="logs"></div>
+ <script>
+ async function loadLogs() {
+ try {
+ const response = await fetch('/api/logs');
+ const data = await response.json();
+ const logs = data.logs;
+ const container = document.getElementById("logs");
+ container.innerHTML = "";
+ if (logs.length === 0) {
+ container.innerHTML = "<p>No logs found.</p>";
+ return;
+ }
+ logs.reverse().forEach((log, i) => {
+ container.innerHTML += `
+ <div class="card">
+ <strong>Entry ${i + 1}</strong><br>
+ IP: ${log.ip}<br>
+ Latitude: ${log.lat}<br>
+ Longitude: ${log.lon}<br>
+ Time: ${log.time}
+ </div>
+ `;
+ });
+ } catch (error) {
+ console.error('Error loading logs:', error);
+ }
+ }
+
+ async function clearLogs() {
+ try {
+ const response = await fetch('/api/logs', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json',
+ },
+ body: JSON.stringify({ logs: [] }),
+ });
+ if (response.ok) {
+ loadLogs();
+ } else {
+ console.log('Failed to clear logs');
+ }
+ } catch (error) {
+ console.error('Error clearing logs:', error);
+ }
+ }
+
+ loadLogs();
+ </script>
+</body>
+</html>
